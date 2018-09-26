@@ -34,9 +34,9 @@ class JdService {
     }
 
     private function getMainPic() {
-        $pat = '/<img id="spec-img" width="350" data-origin="(.*)" alt="(.*)"\/>/isU';
+        $pat = '/<img id="spec-img" width="(.*)" data-origin="(.*)" alt="(.*)"\/>/isU';
         preg_match($pat, $this->content, $match);
-        $origin_url = trim($match[1]);
+        $origin_url = trim($match[2]);
         $url = $this->getRealUrl($origin_url);
         $thumb_url = str_replace('/n1/', '/n5/', $url);
         return [
@@ -46,7 +46,7 @@ class JdService {
     }
 
     private function getPicList() {
-        $pat = "/<img alt='(.*)' src='(.*)' data-url='(.*)' data-img='1' width='50' height='50'>/isU";
+        $pat = "/<img alt='(.*)' src='(.*)' data-url='(.*)' data-img='1' width='(.*)' height='(.*)'>/isU";
         preg_match_all($pat, $this->content, $match);
         $data_urls = $match[3];
         $thumb_urls = [];
