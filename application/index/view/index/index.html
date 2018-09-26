@@ -5,8 +5,11 @@
     <title>PHP 商品采集神器</title>
 </head>
 <body style="line-height: 30px;">
-URL: <input type="text" id="url" style="width: 600px; font-size: 14px;line-height: 14px;"> <br/>
+URL: <input type="text" id="url" value="https://chaoshi.detail.tmall.com/item.htm?spm=a220m.1000858.1000725.1.51c01b8aMZH268&id=40553443841&user_id=725677994&cat_id=2&is_b=1&rn=c36f8a7704ec42baf33c23200c44751a" style="width: 800px; font-size: 14px;line-height: 14px;"> <br/>
 <input type="button" value="采集" id="btn_submit">
+<div id="result" style="width: 810px;border:1px solid #ccc;display: none;">
+
+</div>
 </body>
 <script src="{:config('static_url')}/javascript/jquery-3.3.1.min.js"></script>
 <script>
@@ -18,7 +21,21 @@ $(function () {
             url:"{:url('Index/doCollection')}",
             data:{object_url:object_url},
             success: function (res) {
-                console.log(res);
+                if(res.code==0){
+                    var data =res.data;
+                    var html = "<p>名称：<b>" + data.title +"</b></p>";
+                    html += "<p>主图：<img style='border:1px dotted red;' src='" + data.main_pic.url + "' /></p>";
+                    html += "<div>图集：";
+                    for(var i in data.pic_list.urls){
+                        html += "<p><img style='width:800px;height:800px;border:1px dotted blue;' src='" + data.pic_list.urls[i] + "' /></p>";
+                    }
+                    html += "</div>";
+                    html += "<p>详情：" + data.detail + "</p>";
+                    $("#result").html(html).show();
+                } else {
+                    alert("获取网页失败");
+                    console.log(res);
+                }
             },
             dataType:'json',
             error:function (e) {
