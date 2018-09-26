@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>PHP 商品采集神器</title>
+</head>
+<body style="line-height: 30px;">
+URL: <input type="text" id="url" style="width: 600px; font-size: 14px;line-height: 14px;"> <br/>
+<input type="button" value="采集" id="btn_submit">
+</body>
+<script src="{:config('static_url')}/javascript/jquery-3.3.1.min.js"></script>
+<script>
+$(function () {
+    $("#btn_submit").click(function () {
+        var object_url = $.trim($("#url").val());
+        $.ajax({
+            type:"post",
+            url:"{:url('Index/doCollection')}",
+            data:{object_url:object_url},
+            success: function (res) {
+                console.log(res);
+            },
+            dataType:'json',
+            error:function (e) {
+                alert('网络请求错误，请检查网络');
+                console.log(e);
+            }
+        });
+    });
+});
+</script>
+</html>
