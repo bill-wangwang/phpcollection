@@ -28,14 +28,4 @@ class IndexController {
         exit(json_encode($res));
     }
 
-    public function demo() {
-        $url = '//img.alicdn.com/imgextra/i3/725677994/TB2s6z6eAfb_uJkHFJHXXb4vFXa_!!725677994.jpg_60x60q90.jpg';
-        if(stripos($url, '//')===0){
-            $url = 'http:' . $url;
-        }
-        $temp = explode('.jpg_', $url);
-        $new_url = $temp[0] . '.jpg';
-        return $new_url;
-    }
-
 }

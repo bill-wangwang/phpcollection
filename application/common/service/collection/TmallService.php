@@ -2,16 +2,9 @@
 
 namespace app\common\service\collection;
 
-use think\facade\Log;
+use app\common\service\NetworkService;
+use think\Exception;
 
-/**
- * Class TmallService
- * @package app\common\service\collection
- * TODO
- * 获取原始图片和缩略图
- * 下载远程图片到本地
- * 入库
- */
 class TmallService {
 
     private $content = '';
@@ -27,7 +20,16 @@ class TmallService {
     }
 
     private function getContent($url) {
-        $temp = iconv('gbk', 'utf-8', file_get_contents($url));
+        $headers = [
+            'user_agent'=>"Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/29.0.1547.66 Safari/537.36",
+            'refer'=>'https://www.tmall.com/'
+        ];
+        $headers = [];
+        $content =  NetworkService::curlGet($url, $headers);
+        if(empty($content)){
+            throw new Exception("获取[{$url}]内容失败。");
+        }
+        $temp = iconv('gbk', 'utf-8',$content);
         return $temp;
     }
 
@@ -56,8 +58,11 @@ class TmallService {
     private function getDetail() {
         $pat = '/"descUrl":"(.*)",/isU';
         preg_match($pat, $this->content, $match);
-        $descUrl = "http:" . trim($match[1]);
-        $apiContent = iconv('gbk', 'utf-8', file_get_contents($descUrl));
+        $descUrl = trim($match[1]);
+        if (stripos($descUrl, '//') === 0) {
+            $descUrl = 'http:' . $descUrl;
+        }
+        $apiContent = iconv('gbk', 'utf-8', NetworkService::curlGet($descUrl));
         $patApiContent = "/var desc='(.*)';/isU";
         preg_match($patApiContent, $apiContent, $matchApiContent);
         return $matchApiContent[1];
