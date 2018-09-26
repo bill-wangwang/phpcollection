@@ -3,49 +3,82 @@
 <head>
     <meta charset="UTF-8">
     <title>PHP 商品采集神器</title>
+    <style>
+        .table {
+            border: 1px solid #ddd;
+            border-collapse: collapse;
+        }
+
+        .table thead tr th,
+        .table tbody tr td {
+            padding: 8px 12px;
+            text-align: center;
+            color: #333;
+            border: 1px solid #ddd;
+            border-collapse: collapse;
+            background-color: #fff;
+        }
+    </style>
 </head>
 <body style="line-height: 30px;">
-https://item.jd.com/3303098.html <br/>
-https://chaoshi.detail.tmall.com/item.htm?id=40553443841<br/>
-URL: <input type="text" id="url" value="https://item.taobao.com/item.htm?id=549986505850" style="width: 800px; font-size: 14px;line-height: 14px;"> <br/>
-<input type="button" value="采集" id="btn_submit">
-<div id="result" style="width: 810px;border:1px solid #ccc;display: none;"></div>
+<p class="url" data-url="https://item.jd.com/11126922439.html">京东：https://item.jd.com/11126922439.html</p>
+<p class="url" data-url="https://chaoshi.detail.tmall.com/item.htm?id=557883262832">
+    天猫：https://chaoshi.detail.tmall.com/item.htm?id=557883262832</p>
+<p class="url" data-url="https://item.taobao.com/item.htm?id=535716630615">
+    淘宝：https://item.taobao.com/item.htm?id=535716630615</p>
+<p>支持 <span style="color: red">京东</span> <span style="color: red">天猫</span> <span style="color: red">淘宝</span>
+    的详情页,系统自动判断站点来源类型，点击上面的URL地址可以快速切换</p>
+<p>更多请移步github <a style="color:blue;" href="https://github.com/bill-wangwang/phpcollection" target="_blank">https://github.com/bill-wangwang/phpcollection</a> </p>
+URL: <input type="text" id="url" value="https://chaoshi.detail.tmall.com/item.htm?id=557883262832"
+            style="width: 800px; font-size: 14px;line-height: 14px;"> <br/>
+<input type="button" value="采集" id="btn_submit" style="width: 100px;height: 50px;font-size: 20px;">
+<div id="result" style="width: 1002px;border:0px solid #ccc;display: none;"></div>
 </body>
 <script src="{:config('static_url')}/javascript/jquery-3.3.1.min.js"></script>
 <script>
-$(function () {
-    $("#btn_submit").click(function () {
-        var object_url = $.trim($("#url").val());
-        $.ajax({
-            type:"post",
-            url:"{:url('Index/doCollection')}",
-            data:{object_url:object_url},
-            success: function (res) {
-                console.log(res);
-                if(res.code==0){
-                    var data =res.data;
-                    var html = "<p>名称：<b>" + data.title +"</b></p>";
-                    html += "<p>主图：<img style='border:1px dotted red;' src='" + data.main_pic.url + "' /></p>";
-                    html += "<div>图集：";
-                    for(var i in data.pic_list.urls){
-                        html += "<p><img style='width:800px;height:800px;border:1px dotted blue;' src='" + data.pic_list.urls[i] + "' /></p>";
-                    }
-                    html += "</div>";
-
-                    html += "<p>详情：" + data.detail + "</p>";
-                    $("#result").html(html).show();
-                } else {
-                    alert("获取网页失败");
-                    console.log(res);
-                }
-            },
-            dataType:'json',
-            error:function (e) {
-                alert('网络请求错误，请检查网络');
-                console.log(e);
+    $(function () {
+        $('.url').click(function () {
+            var url = $(this).data('url');
+            $("#url").val(url)
+        });
+        $("#btn_submit").click(function () {
+            var object_url = $.trim($("#url").val());
+            if (object_url.length <= 0) {
+                alert('URL地址不能为空~');
+                return;
             }
+            $.ajax({
+                type: "post",
+                url: "{:url('Index/doCollection')}",
+                data: {object_url: object_url},
+                success: function (res) {
+                    console.log(res);
+                    if (res.code == 0) {
+                        var data = res.data;
+                        var html = "<table border='1'><tr><th width='100'>名称</th><td>" + data.title + "</td></tr>";
+                        html += "<tr><th>主图</th><td><img  style='max-width:800px;' src='" + data.main_pic.url + "' /></td></tr>";
+
+                        html += "<tr><th>图集</th><td>";
+                        for (var i in data.pic_list.urls) {
+                            html += "<p style='display: block;border-bottom:1px dotted #ccc;'><img style='max-width:800px;' src='" + data.pic_list.urls[i] + "' /></p>";
+                        }
+                        html += "</td></tr>";
+
+                        html += "<tr><th>详情</th><td>" + data.detail + "</td></tr>";
+                        html += "</table>";
+                        $("#result").html(html).show();
+                    } else {
+                        alert("获取网页失败");
+                        console.log(res);
+                    }
+                },
+                dataType: 'json',
+                error: function (e) {
+                    alert('网络请求错误，请检查网络');
+                    console.log(e);
+                }
+            });
         });
     });
-});
 </script>
 </html>

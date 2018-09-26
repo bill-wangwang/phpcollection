@@ -52,7 +52,7 @@ class JdService {
         $thumb_urls = [];
         $urls = [];
         foreach ($data_urls as $url) {
-            $thumb_urls = "http://img13.360buyimg.com/n5/" . $url;
+            $thumb_urls[] = "http://img13.360buyimg.com/n5/" . $url;
             $urls[] = "http://img13.360buyimg.com/n1/" . $url;
         }
         return [
