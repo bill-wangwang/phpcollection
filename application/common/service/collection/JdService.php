@@ -69,6 +69,9 @@ class JdService {
             $descUrl = 'http:' . $descUrl;
         }
         $apiContent = iconv('gbk', 'utf-8', NetworkService::curlGet($descUrl));
+        if(stripos($apiContent, 'showdesc(')===0){
+            $apiContent = substr($apiContent, 9,-1);
+        }
         $json = json_decode($apiContent, 1);
         $content = $json['content'];
         $content = str_replace('data-lazyload', 'src', $content);
